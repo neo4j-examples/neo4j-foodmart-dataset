@@ -15,7 +15,7 @@ CREATE CONSTRAINT ON (d:Date) ASSERT d.date IS UNIQUE;
 CREATE CONSTRAINT ON (p:Promotion) ASSERT p.id IS UNIQUE;
 CREATE CONSTRAINT ON (s:Sale) ASSERT s.id IS UNIQUE;
 
-LOAD CSV WITH HEADERS FROM "file:///tmp/foodmart/region.csv" AS line
+LOAD CSV WITH HEADERS FROM "https://github.com/neo4j-contrib/neo4j-foodmart-dataset/raw/master/data/region.csv" AS line
 MERGE (r:Region {id: line.region_id})
 ON CREATE
 SET r.sales_city = line.sales_city
@@ -25,7 +25,7 @@ SET r.sales_city = line.sales_city
 , r.sales_country = line.sales_country
 ;
 
-LOAD CSV WITH HEADERS FROM "file:///tmp/foodmart/customer.csv" AS line
+LOAD CSV WITH HEADERS FROM "https://github.com/neo4j-contrib/neo4j-foodmart-dataset/raw/master/data/customer.csv" AS line
 OPTIONAL MATCH (r:Region {id: line.customer_region_id})
 MERGE (c:Customer {id: line.customer_id})
 ON CREATE
@@ -59,7 +59,7 @@ SET c.account_num = line.account_num
 MERGE (c)-[:IN_REGION]->(r)
 ;
 
-LOAD CSV WITH HEADERS FROM "file:///tmp/foodmart/product_class.csv" AS line
+LOAD CSV WITH HEADERS FROM "https://github.com/neo4j-contrib/neo4j-foodmart-dataset/raw/master/data/product_class.csv" AS line
 MERGE (pf:ProductFamily {name: line.family})
 MERGE (pc:ProductCategory {name: line.category})
 MERGE (d:Department {name: line.department})
@@ -71,7 +71,7 @@ MERGE (ps)-[:IN_CATEGORY]->(pc)
 MERGE (ps)-[:IN_DEPARTMENT]->(d)
 ;
 
-LOAD CSV WITH HEADERS FROM "file:///tmp/foodmart/product.csv" AS line
+LOAD CSV WITH HEADERS FROM "https://github.com/neo4j-contrib/neo4j-foodmart-dataset/raw/master/data/product.csv" AS line
 OPTIONAL MATCH (ps:ProductSubCategory {id: line.product_class_id})
 MERGE (p:Product {id: line.product_id})
 ON CREATE
@@ -91,7 +91,7 @@ SET p.brand_name = line.brand_name
 MERGE (p)-[:IN_CATEGORY]->(ps)
 ;
 
-LOAD CSV WITH HEADERS FROM "file:///tmp/foodmart/store.csv" AS line
+LOAD CSV WITH HEADERS FROM "https://github.com/neo4j-contrib/neo4j-foodmart-dataset/raw/master/data/store.csv" AS line
 OPTIONAL MATCH (r:Region {id: line.region_id})
 MERGE (c:City {name: line.store_city, state: line.store_state, country: line.store_country})
 MERGE (st:StoreType {name: line.store_type})
@@ -123,7 +123,7 @@ MERGE (s)-[:IN_CITY]->(c)
 MERGE (c)-[:IN_REGION]->(r)
 ;
 
-LOAD CSV WITH HEADERS FROM "file:///tmp/foodmart/time_by_day.csv" AS line
+LOAD CSV WITH HEADERS FROM "https://github.com/neo4j-contrib/neo4j-foodmart-dataset/raw/master/data/time_by_day.csv" AS line
 MERGE (d:Date {id: line.time_id})
 ON CREATE
 SET d.date = line.the_date
@@ -133,7 +133,7 @@ SET d.date = line.the_date
 , d.day = toInt(line.day_of_month)
 ;
 
-LOAD CSV WITH HEADERS FROM "file:///tmp/foodmart/promotion.csv" AS line
+LOAD CSV WITH HEADERS FROM "https://github.com/neo4j-contrib/neo4j-foodmart-dataset/raw/master/data/promotion.csv" AS line
 MERGE (p:Promotion {id: line.promotion_id})
 ON CREATE
 SET p.name = line.promotion_name
@@ -143,7 +143,7 @@ SET p.name = line.promotion_name
 , p.end_date = line.end_date
 ;
 
-LOAD CSV WITH HEADERS FROM "file:///tmp/foodmart/sales.csv" AS line
+LOAD CSV WITH HEADERS FROM "https://github.com/neo4j-contrib/neo4j-foodmart-dataset/raw/master/data/sales.csv" AS line
 OPTIONAL MATCH (d:Date {id: line.time_id})
 OPTIONAL MATCH (st:Store {id: line.store_id})
 OPTIONAL MATCH (c:Customer {id: line.customer_id})
