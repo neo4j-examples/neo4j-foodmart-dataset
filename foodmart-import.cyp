@@ -6,6 +6,7 @@ CREATE CONSTRAINT ON (pf:ProductFamily) ASSERT pf.name IS UNIQUE;
 CREATE CONSTRAINT ON (d:Department) ASSERT d.name IS UNIQUE;
 CREATE CONSTRAINT ON (pc:ProductCategory) ASSERT pc.name IS UNIQUE;
 CREATE CONSTRAINT ON (ps:ProductSubCategory) ASSERT ps.id IS UNIQUE;
+CREATE CONSTRAINT ON (b:Brand) ASSERT b.name IS UNIQUE;
 CREATE CONSTRAINT ON (p:Product) ASSERT p.id IS UNIQUE;
 CREATE CONSTRAINT ON (st:StoreType) ASSERT st.name IS UNIQUE;
 CREATE CONSTRAINT ON (s:Store) ASSERT s.id IS UNIQUE;
@@ -75,10 +76,10 @@ MERGE (ps)-[:IN_DEPARTMENT]->(d)
 
 LOAD CSV WITH HEADERS FROM "https://github.com/neo4j-examples/neo4j-foodmart-dataset/raw/master/data/product.csv" AS line
 OPTIONAL MATCH (ps:ProductSubCategory {id: line.product_class_id})
+MERGE (b:Brand {name: line.brand_name})
 MERGE (p:Product {id: line.product_id})
 ON CREATE
-SET p.brand_name = line.brand_name
-, p.name = line.product_name
+SET p.name = line.product_name
 , p.SKU = line.SKU
 , p.SRP = line.SRP
 , p.gross_weight = line.gross_weight
@@ -91,6 +92,7 @@ SET p.brand_name = line.brand_name
 , p.shelf_height = line.shelf_height
 , p.shelf_depth = line.shelf_depth
 MERGE (p)-[:IN_CATEGORY]->(ps)
+MERGE (p)-[:FROM_BRAND]->(b)
 ;
 
 LOAD CSV WITH HEADERS FROM "https://github.com/neo4j-examples/neo4j-foodmart-dataset/raw/master/data/store.csv" AS line
