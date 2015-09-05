@@ -153,7 +153,7 @@ MERGE (p:Promotion {id: line.promotion_id})
 ON CREATE
 SET p.name = line.promotion_name
 , p.media_type = line.media_type
-, p.cost = line.cost
+, p.cost = toInt(line.cost)
 , p.start_date = line.start_date
 , p.end_date = line.end_date
 MERGE (p)-[:STARTS_ON]->(sd)
