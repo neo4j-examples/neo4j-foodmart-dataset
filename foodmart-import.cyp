@@ -10,6 +10,8 @@ CREATE CONSTRAINT ON (ps:ProductSubCategory) ASSERT ps.name IS UNIQUE;
 CREATE CONSTRAINT ON (p:Product) ASSERT p.id IS UNIQUE;
 CREATE CONSTRAINT ON (st:StoreType) ASSERT st.name IS UNIQUE;
 CREATE CONSTRAINT ON (s:Store) ASSERT s.id IS UNIQUE;
+CREATE CONSTRAINT ON (y:Year) ASSERT y.year IS UNIQUE;
+CREATE CONSTRAINT ON (m:Month) ASSERT m.id IS UNIQUE;
 CREATE CONSTRAINT ON (d:Date) ASSERT d.id IS UNIQUE;
 CREATE CONSTRAINT ON (d:Date) ASSERT d.date IS UNIQUE;
 CREATE CONSTRAINT ON (d:Date) ASSERT d.day IS UNIQUE;
@@ -125,14 +127,23 @@ MERGE (c)-[:IN_REGION]->(r)
 ;
 
 LOAD CSV WITH HEADERS FROM "https://github.com/neo4j-contrib/neo4j-foodmart-dataset/raw/master/data/time_by_day.csv" AS line
+MERGE (y:Year {year: toInt(line.the_year)})
+MERGE (m:Month {id: line.the_year + "-" + line.the_month})
+ON CREATE
+SET m.month = toInt(line.the_month)
+MERGE (m)<-[:HAS_YEAR]-(y)
 MERGE (d:Date {id: line.time_id})
 ON CREATE
 SET d.date = line.the_date
 , d.day = toInt(line.day_since_epoch)
-, d.year = toInt(line.the_year)
-, d.month = toInt(line.the_month)
 , d.day_of_month = toInt(line.day_of_month)
 , d.day_of_week = line.the_day
+MERGE (d)<-[:HAS_DAY]-(m)
+;
+
+MATCH (d:Date)
+MATCH (next:Date {day: d.day+1})
+MERGE (d)-[:NEXT_DAY]->(next)
 ;
 
 LOAD CSV WITH HEADERS FROM "https://github.com/neo4j-contrib/neo4j-foodmart-dataset/raw/master/data/promotion.csv" AS line
