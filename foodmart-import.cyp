@@ -147,6 +147,8 @@ MERGE (d)-[:NEXT_DAY]->(next)
 ;
 
 LOAD CSV WITH HEADERS FROM "https://github.com/neo4j-contrib/neo4j-foodmart-dataset/raw/master/data/promotion.csv" AS line
+OPTIONAL MATCH (sd:Date {date: line.start_date})
+OPTIONAL MATCH (ed:Date {date: line.end_date})
 MERGE (p:Promotion {id: line.promotion_id})
 ON CREATE
 SET p.name = line.promotion_name
@@ -154,6 +156,8 @@ SET p.name = line.promotion_name
 , p.cost = line.cost
 , p.start_date = line.start_date
 , p.end_date = line.end_date
+MERGE (p)-[:STARTS_ON]->(sd)
+MERGE (p)-[:ENDS_ON]->(ed)
 ;
 
 LOAD CSV WITH HEADERS FROM "https://github.com/neo4j-contrib/neo4j-foodmart-dataset/raw/master/data/sales.csv" AS line
