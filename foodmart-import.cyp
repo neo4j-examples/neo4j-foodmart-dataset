@@ -12,6 +12,7 @@ CREATE CONSTRAINT ON (st:StoreType) ASSERT st.name IS UNIQUE;
 CREATE CONSTRAINT ON (s:Store) ASSERT s.id IS UNIQUE;
 CREATE CONSTRAINT ON (d:Date) ASSERT d.id IS UNIQUE;
 CREATE CONSTRAINT ON (d:Date) ASSERT d.date IS UNIQUE;
+CREATE CONSTRAINT ON (d:Date) ASSERT d.day IS UNIQUE;
 CREATE CONSTRAINT ON (p:Promotion) ASSERT p.id IS UNIQUE;
 CREATE CONSTRAINT ON (s:Sale) ASSERT s.id IS UNIQUE;
 
@@ -127,10 +128,11 @@ LOAD CSV WITH HEADERS FROM "https://github.com/neo4j-contrib/neo4j-foodmart-data
 MERGE (d:Date {id: line.time_id})
 ON CREATE
 SET d.date = line.the_date
-, d.day_of_week = line.the_day
+, d.day = toInt(line.day_since_epoch)
 , d.year = toInt(line.the_year)
 , d.month = toInt(line.the_month)
-, d.day = toInt(line.day_of_month)
+, d.day_of_month = toInt(line.day_of_month)
+, d.day_of_week = line.the_day
 ;
 
 LOAD CSV WITH HEADERS FROM "https://github.com/neo4j-contrib/neo4j-foodmart-dataset/raw/master/data/promotion.csv" AS line
