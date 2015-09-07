@@ -172,9 +172,9 @@ MERGE (s)-[:PURCHASED_BY]->(c)
 MERGE (p:Product {id: line.product_id})
 MERGE (s)-[i:LINE_ITEM]->(p)
 ON CREATE
-SET i.price = toFloat(line.store_sales)
-, i.cost_price = toFloat(line.store_cost)
-, i.quantity = toInt(line.unit_sales)
+SET i.price = toInt(replace(line.store_sales, ".", ""))
+, i.cost_price = toInt(replace(line.store_cost, ".", ""))
+, i.quantity = toInt(replace(line.unit_sales, ".", ""))
 WITH s, line
 FOREACH (id IN (CASE WHEN line.promotion_id IS NULL THEN [] ELSE [line.promotion_id] END) |
   MERGE (pr:Promotion {id: id})
